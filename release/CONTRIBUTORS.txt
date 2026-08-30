@@ -1,0 +1,260 @@
+# The OpenLB Project
+#
+# This documents contains a (incomplete) listing of specific
+# contributions, organized alphabetically by last name.
+#
+# See AUTHORS.txt for a plain list of release authors.
+
+Armani Arfaoui
+  core: performance improvements for D3Q19 BGK collision operator
+
+Sam Avis
+  dynamics: multicomponent free energy model
+
+Saada Badie
+  core: performance improvements for D3Q19 BGK collision operator
+
+Lukas Baron
+  utilities: (parallel) console output, time and performance measurement,
+  dynamics: porous media model
+  functors: concept, div. functors implementation
+
+Tim Bingert
+  multi-phase-multi-component: MCMP Shan-Chen models and equation of state UnitConverter
+  examples: air-water equilibrium examples
+  organization: testing
+
+Fedor Bukreev
+  reaction: adsorption and reaction models
+  examples: adsorption examples
+  organization: testing
+
+Vojtech Cvrcek
+  dynamics: power law
+  examples: power law, updates
+  functors: 2D adaptation
+
+Davide Dapelo
+  core: power-law unit converter
+  dynamics: Guo-Zhao porous, contributions on power-law, contributions on HLBM
+  examples: reactionFiniteDifferences2d, advectionDiffusion3d, advectionDiffusionPipe3d
+  functors: contributions on indicator and smooth indicator
+
+Tim Dornieden
+  functors: smooth start scaling
+  io: vti writer
+
+Simon Englert
+  documentation: user guide
+
+Jonas Fietz
+  io: configure file parsing based on XML, octree STL reader interface to CVMLCPP
+  communication: heuristic load balancer
+
+Benjamin Förster
+  core: super data implementation
+  io: new serializer and serializable implementation, vti writer, new vti reader
+  functors: new discrete indicator
+
+Max Gaedtke
+  core: unit converter
+  dynamics: thermal
+  examples: thermal
+
+Simon Großmann
+  example: poiseuille2dEOC
+  io: csv and gnuplot interface
+  postprocessing: eoc analysis
+
+Nicolas Hafen
+  dynamics: moving porous media (HLBM)
+  examples: surface resolved particle simulations, bifurcation3d
+  particles: core framework, surface resolved particles, coupling, dynamics, creator-functions, particle framework refactoring, sub-grid scale refactoring, particle decomposition
+  documentation: user guide
+
+Marc Haussmann
+  dynamics: turbulence modelling
+  examples: tgv3d
+  io: gnuplot heatmap
+
+Marc Heinzelmann
+  postProcessor: surface reaction models using source term and robin-type boundary conditions
+  examples: longitudinalMixing3d
+
+Thomas Henn
+  io: voxelizer interface based on STL
+  particles: particulate flows
+
+Claudius Holeksa
+  postProcessor: free surface
+  example: free surface
+
+Anna Husfeldt
+  functors: signed distance surface framework
+
+Shota Ito
+  core: solver, boundary conditions, optimization
+  reaction: adsorption and reaction models
+  examples: poiseuille3dEoc, convectedPlate3d
+  documentation: user-guide
+
+Jonathan Jeppener-Haltenhoff
+  functors: wall shear stress
+  examples: channel3d, poiseuille3d
+  core: contributions to define field
+  documentation: user guide
+
+Julius Jeßberger
+  core: solver, template momenta concept, optimization
+  examples: poiseuille2d, cavity2dSolver, porousPlate3dSolver, testFlow3dSolver, optimization examples
+  postprocessing: error analysis
+  utilities: algorithmic differentiation
+
+Florian Kaiser
+  examples: solidPlate2d, holeyPlate2d
+  dynamics: LBM for solids
+  documentation: user guide
+
+Danial Khazaeipoul
+  examples: risingBubble
+  freesurface: General algorithm improvements, result validation
+
+Fabian Klemens
+  functors: flux, indicator-based functors
+  io: gnuplot interface
+
+Jonas Kratzke
+  core: unit converter
+  io: GUI interface based on description files and OpenGPI
+  boundaries: Bouzidi boundary condition
+
+Mathias J. Krause
+  core: hybrid-parallelization approach, super structure
+  communication: OpenMP parallelization, cuboid data structure for MPI parallelization, load balancing
+  general: makefile environment for compilation, integration and maintenance of added components (since 2008)
+  boundaries: Bouzidi boundary condition, convection
+  geometry: concept, parallelization, statistics
+  io: new serializer and serializable concept
+  functors: concept, div. functors implementation
+  examples: venturi3d, aorta3d, optimization
+  organization: integration and maintenance of added components (2008-2017), project management (2006-)
+
+Louis Kronberg
+   core: ade unit converter
+   dynamics: KBC, entropic LB, Cumulant
+   examples: advectionDiffusion1d, advectionDiffusion2d, bstep2d
+
+Eliane Kummer
+  documentation: user guide
+
+Adrian Kummerländer
+  core: SIMD CPU support, CUDA GPU support, population and field data structure, propagation pattern, vector hierarchy, cell interface, field data interface, meta descriptors, automatic code generation
+  dynamics: new dynamics concept, dynamics tuple, momenta concept
+  communication: block propagation, communication layer
+  functors: lp-norm, flux, reduction, lattice indicator, error norms, refinement quality criterion, composition
+  boundaries: new post processor concept, water-tightness testing and post-processor priority
+  documentation: metadata, user guide, release organization
+  general: CI maintenance, Nix environment, Core development, Operator-style model refactoring
+
+Jonas Latt
+  core: basic block structure
+  communication: basic parallel block lattice approach (< release 0.9)
+  io: vti writer
+  general: integration and maintenance of added components (2006-2008)
+  boundaries: basic boundary structure
+  dynamics: basic dynamics structure
+  examples: numerous examples, which have been further developed in recent years
+  organization: integration and maintenance of added components (2006-2008), project management (2006-2008)
+
+Marie-Luise Maier
+  particles: particulate flows, frame change
+
+Orestis Malaspinas
+  boundaries: alternative boundary conditions (Inamuro, Zou/He, Nonlinear FD)
+  dynamics: alternative LB models (Entropic LB, MRT)
+
+Jan E. Marquardt
+  examples: surface resolved particle simulations, resolvedRock3d
+  particles: core framework, surface resolved particles, coupling, dynamics, creator-functions, particle decomposition
+  dynamics: Euler-Euler particle dynamics
+  functors: signed distance surface framework
+  utilities: algorithmic differentiation
+  documentation: user guide
+  general: CI maintenance
+
+Cyril Masquelier
+  functors: indicator, smooth indicator
+
+Albert Mink
+  functors: arithmetic
+  io: parallel VTK interface3, zLib compression for VTK data, GifWriter
+  dynamics: radiative transport
+  boundary: diffuse reflective boundary
+
+Markus Mohrhard
+  general: makefile environment for parallel compilation
+  organization: integration and maintenance of added components
+
+Johanna Mödl
+  core: convection diffusion reaction dynamics, examples: advectionDiffusionReaction2d
+
+Patrick Nathen
+  dynamics: turbulence modeling (advanced subgrid-scale models)
+  examples: nozzle3d
+
+Johannes Nguyen
+  examples: four roll mill, binary shear flow
+
+Aleksandra Pachalieva
+   dynamics: thermal (MRT model)
+   examples: thermal (MRT model)
+
+Martin Sadric
+  particles: core framework, creator-functions
+  documentation: user guide
+
+Maximilian Schecher
+  postProcessor: free surface
+  example: free surface
+  general: Adaptation of non-particle examples to the operator-style / GPU support
+
+Stephan Simonis
+  core: ade unit converter
+  examples: advectionDiffusion1d, advectionDiffusion2d, advectionDiffusion3d, advectionDiffusionPipe3d, binaryShearFlow2d, fourRollMill2d
+  documentation: user guide
+  dynamics: MRT, KBC, Cumulant, entropic LB, free energy model
+
+Lukas Springmann
+  particles: user-guide, unit tests
+
+Bernd Stahl
+  communication: 3D extension to MultiBlock structure for MPI parallelization (< release 0.9)
+  core: parallel version of (scalar or tensor-valued) data fields (< release 0.9)
+  io: VTK output of data (< release 0.9)
+
+Dennis Teutscher
+  core: porting slipBoundary3d to GPU
+  examples: porous city3d
+  functors: atmospheric boundary layer, porous geometry importer (vtk/vdb files)
+  organization: testing
+  documentation: user guide
+
+Robin Trunk
+  dynamics: parallel thermal, advection diffusion models, 3D HLBM, Euler-Euler particle, multicomponent free energy model
+
+Peter Weisbrod
+  dynamics: parallel multi phase/component
+  examples: structure and showcases, phaseSeparationXd
+
+Gilles Zahnd
+  functors: rotating frame functors
+
+Asher Zarth
+  core: vector implementation
+
+Mingliang Zhong 
+  dynamics: uncertainty quantification, stochastic Galerkin LBM, stochastic collocation LBM, Monte Carlo methods 
+  external: features
+
+Simon Zimny
+  io: pre-processing: automated setting of boundary conditions

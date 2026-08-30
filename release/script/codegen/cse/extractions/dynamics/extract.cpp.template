@@ -1,0 +1,46 @@
+/*  Lattice Boltzmann sample, written in C++, using the OpenLB
+ *  library
+ *
+ *  Copyright (C) 2024 Shota Ito
+ *  E-mail contact: info@openlb.net
+ *  The most recent release of OpenLB can be downloaded at
+ *  <http://www.openlb.net/>
+ *
+ *  This program is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU General Public License
+ *  as published by the Free Software Foundation; either version 2
+ *  of the License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public
+ *  License along with this program; if not, write to the Free
+ *  Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ *  Boston, MA  02110-1301, USA.
+ */
+
+/*  ========================================================
+ *  ==  WARNING: This is an automatically generated file, ==
+ *  ==                  do not modify.                    ==
+ *  ========================================================
+ */
+
+#define DISABLE_CSE
+
+#include <iostream>
+#include <fstream>
+#include <olb.h>
+
+using namespace olb;
+
+int main() {
+  std::ofstream file(std::string("../../../${output}"));
+  if (file.is_open()) {
+    file << cse::extractExpressionTree<${dynamics}>().str() << std::endl;
+    file.close();
+  }
+  return 0;
+}

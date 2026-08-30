@@ -1,0 +1,12 @@
+name: openlb-codegen
+
+channels:
+  - conda-forge
+
+dependencies:
+  - python=3.9
+  - cppyy=3.1.2
+  - sympy=1.11.1
+  - mako=1.2.4
+  - zlib=1.2.13
+  - make=4.3

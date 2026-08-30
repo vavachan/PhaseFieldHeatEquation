@@ -1,0 +1,104 @@
+cff-version: 1.2.0
+title: OpenLB
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Adrian
+    family-names: Kummerländer
+    email: adrian.kummerlaender@kit.edu
+    orcid: 'https://orcid.org/0000-0003-4392-0045'
+  - given-names: Tim
+    family-names: Bingert
+  - given-names: Fedor
+    family-names: Bukreev
+    orcid: 'https://orcid.org/0009-0007-5615-8869'
+  - given-names: Luiz Eduardo
+    family-names: Czelusniak
+    orcid: 'https://orcid.org/0000-0001-8488-5720'
+  - given-names: Davide
+    family-names: Dapelo
+  - given-names: Christoph
+    family-names: Gaul
+  - given-names: Nicolas
+    family-names: Hafen
+  - given-names: Shota
+    family-names: Ito
+  - given-names: Julius
+    family-names: Jeßberger
+    orcid: 'https://orcid.org/0000-0002-7910-1175'
+  - given-names: Danial
+    family-names: Khazaeipoul
+  - given-names: Timm
+    family-names: Krüger
+  - given-names: Halim
+    family-names: Kusumaatmaja
+    orcid: 'https://orcid.org/0000-0002-3392-9479'
+  - given-names: Jan
+    name-particle: E
+    family-names: Marquardt
+    orcid: 'https://orcid.org/0000-0002-7666-3439'
+  - given-names: Alice
+    family-names: Raeli
+  - given-names: Michael
+    family-names: Rennick
+    orcid: 'https://orcid.org/0000-0002-7184-971X'
+  - given-names: František
+    family-names: Prinz
+    orcid: 'https://orcid.org/0000-0003-1506-5213'
+  - given-names: Maximilian
+    family-names: Schecher
+  - given-names: Andreas
+    family-names: Schneider
+  - given-names: Yuji
+    family-names: Shimojima
+  - given-names: Stephan
+    family-names: Simonis
+    orcid: 'https://orcid.org/0000-0001-8555-4245'
+  - given-names: Pascal
+    family-names: Sitter
+  - given-names: Philipp
+    family-names: Spelten
+  - given-names: Alexandre
+    family-names: Taques
+  - given-names: Dennis
+    family-names: Teutscher
+    orcid: 'https://orcid.org/0009-0003-3286-994X'
+  - given-names: Mingliang
+    family-names: Zhong
+  - given-names: Mathias
+    name-particle: J
+    family-names: Krause
+    email: mathias.krause@kit.edu
+    orcid: 'https://orcid.org/0000-0003-1026-6462'
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.15270117
+    description: OpenLB Release 1.8
+  - type: doi
+    value: 10.1016/j.camwa.2020.04.033
+    description: OpenLB Overview Paper
+repository-code: 'https://gitlab.com/openlb/release'
+url: 'https://openlb.net'
+abstract: >-
+  The OpenLB project provides a C++ package for the
+  implementation of lattice Boltzmann methods that is
+  general enough to address a vast range of transport
+  problems, e.g. in computational fluid dynamics. The source
+  code is publicly available and constructed in a well
+  readable, modular way. This enables for a fast
+  implementation of both simple academic test problems and
+  advanced engineering applications. It is also easily
+  extensible to include new physical content.
+keywords:
+  - Lattice Boltzmann Methods
+  - Computational Fluid Dynamics
+  - High Performance Computation
+  - Particulate Flows
+  - Multi-phase Flows
+  - Process Engineering
+  - Optimization
+license: GPL-2.0
+version: '1.8'
+date-released: '2025-04-24'

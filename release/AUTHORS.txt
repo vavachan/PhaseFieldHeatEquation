@@ -1,0 +1,64 @@
+# The OpenLB Project
+#
+# List of all authors across releases 0.3 to 1.7, organized alphabetically by last name.
+#
+# See CONTRIBUTORS.txt for detailed attributions.
+
+S. Avis
+L. Baron
+T. Bingert
+F. Bukreev
+A. Claro Barreto
+M. Crocoll
+L. Czelusniak
+D. Dapelo
+T. Dornieden
+J. Fietz
+M. Gaedtke
+S. Großmann
+N. Hafen
+M. Haußmann
+M. Heinzelmann
+T. Henn
+C. Holeksa
+A. Husfeldt
+S. Ito
+J. Jeppener-Haltenhoff
+J. Jeßberger
+F. Kaiser
+D. Khazaeipoul
+F. Klemens
+J. Kratzke
+M.J. Krause
+L. Kronberg
+A. Kummerländer
+H. Kusumaatmaja
+J. Latt
+M.-L. Maier
+O. Malaspinas
+J.E. Marquardt
+A. Mink
+J. Mödl
+M. Mohrhard
+P. Nathen
+J. Nguyen
+T. Pertzel
+F. Prinz
+F. Raichle
+M. Rennick
+J. Ross-Jones
+M. Sadric
+M. Schecher
+S. Simonis
+P. Sitter
+L. Springmann
+B. Stahl
+N. Suntoyo
+D. Teutscher
+R. Trunk
+P. Weisbrod
+M. Wu
+G. Zahnd
+A. Zarth
+M. Zhong
+S. Zimny

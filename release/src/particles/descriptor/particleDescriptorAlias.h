@@ -1,0 +1,130 @@
+/*  This file is part of the OpenLB library
+ *
+ *  Copyright (C) 2021 Nicolas Hafen, Mathias J. Krause
+ *  E-mail contact: info@openlb.net
+ *  The most recent release of OpenLB can be downloaded at
+ *  <http://www.openlb.net/>
+ *
+ *  This program is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU General Public License
+ *  as published by the Free Software Foundation; either version 2
+ *  of the License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public
+ *  License along with this program; if not, write to the Free
+ *  Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ *  Boston, MA  02110-1301, USA.
+*/
+
+#ifndef PARTICLE_DESCRIPTOR_ALIAS_H
+#define PARTICLE_DESCRIPTOR_ALIAS_H
+
+
+namespace olb {
+
+namespace descriptors {
+
+using ResolvedParticle2D = PARTICLE_DESCRIPTOR<2, GENERAL_TMP<2>,
+      MOBILITY_VERLET<2>, SURFACE_RESOLVED<2>,
+      FORCING_RESOLVED<2>, PHYSPROPERTIES_RESOLVED<2> >;
+
+using ResolvedParticle3D = PARTICLE_DESCRIPTOR<3, GENERAL_TMP<3>,
+      MOBILITY_VERLET<3>, SURFACE_RESOLVED<3>,
+      FORCING_RESOLVED<3>, PHYSPROPERTIES_RESOLVED<3> >;
+
+using ResolvedCircle2D = PARTICLE_DESCRIPTOR<2, GENERAL_TMP<2>,
+      MOBILITY_VERLET<2>, SURFACE_RESOLVED_CIRCULAR<2>,
+      FORCING_RESOLVED<2>, PHYSPROPERTIES_RESOLVED<2> >;
+
+using ResolvedSphere3D = PARTICLE_DESCRIPTOR<3, GENERAL_TMP<3>,
+      MOBILITY_VERLET<3>, SURFACE_RESOLVED_CIRCULAR<3>,
+      FORCING_RESOLVED<3>, PHYSPROPERTIES_RESOLVED<3> >;
+
+using ResolvedCircleWithContact2D = PARTICLE_DESCRIPTOR<2, GENERAL_TMP<2>,
+      MOBILITY_VERLET<2>, SURFACE_RESOLVED_CIRCULAR<2>,
+      FORCING_RESOLVED<2>, PHYSPROPERTIES_RESOLVED<2>,
+      MECHPROPERTIES_COLLISION<2>, NUMERICPROPERTIES_RESOLVED_CONTACT<2> >;
+
+using ResolvedSphereWithContact3D = PARTICLE_DESCRIPTOR<3, GENERAL_TMP<3>,
+      MOBILITY_VERLET<3>, SURFACE_RESOLVED_CIRCULAR<3>,
+      FORCING_RESOLVED<3>, PHYSPROPERTIES_RESOLVED<3>,
+      MECHPROPERTIES_COLLISION<3>, NUMERICPROPERTIES_RESOLVED_CONTACT<3> >;
+
+using ResolvedParticleWithContact2D = PARTICLE_DESCRIPTOR<2, GENERAL_TMP<2>,
+      MOBILITY_VERLET<2>, SURFACE_RESOLVED<2>,
+      FORCING_RESOLVED<2>, PHYSPROPERTIES_RESOLVED<2>,
+      MECHPROPERTIES_COLLISION<2>, NUMERICPROPERTIES_RESOLVED_CONTACT<2> >;
+
+using ResolvedParticleWithContact3D = PARTICLE_DESCRIPTOR<3, GENERAL_TMP<3>,
+      MOBILITY_VERLET<3>, SURFACE_RESOLVED<3>,
+      FORCING_RESOLVED<3>, PHYSPROPERTIES_RESOLVED<3>,
+      MECHPROPERTIES_COLLISION<3>, NUMERICPROPERTIES_RESOLVED_CONTACT<3> >;
+
+using ResolvedDecomposedParticle2D =
+      PARTICLE_DESCRIPTOR<2, GENERAL_EXTENDABLE<2>,
+      MOBILITY_VERLET<2>, SURFACE_RESOLVED_PARALLEL<2>,
+      FORCING_RESOLVED<2>, PHYSPROPERTIES_RESOLVED<2>,
+      PARALLELIZATION_RESOLVED >;
+
+using ResolvedDecomposedParticle3D =
+      PARTICLE_DESCRIPTOR<3, GENERAL_EXTENDABLE<3>,
+      MOBILITY_VERLET<3>, SURFACE_RESOLVED_PARALLEL<3>,
+      FORCING_RESOLVED<3>, PHYSPROPERTIES_RESOLVED<3>,
+      PARALLELIZATION_RESOLVED >;
+
+using SubgridParticle3D =
+      PARTICLE_DESCRIPTOR<3, GENERAL_EXTENDABLE<3>,
+      MOBILITY_VERLET_NO_ANGLE<3>,
+      FORCING_SUBGRID<3>, PHYSPROPERTIES_SUBGRID<3>,
+      DYNBEHAVIOUR_BASIC,
+      PARALLELIZATION_SUBGRID >;
+
+
+using SubgridParticle3Dparallel2 =
+      PARTICLE_DESCRIPTOR<3, GENERAL_EXTENDABLE<3>,
+      MOBILITY_ANALYTIC_NO_ANGLE_FLUIDVEL<3>,
+      FORCING_SUBGRID<3>, PHYSPROPERTIES_SUBGRID_DENSITY<3>,
+      DYNBEHAVIOUR_BASIC,
+      PARALLELIZATION_SUBGRID >;
+
+using SubgridParticle3Dparallel2HaiderLevenspiel =
+      PARTICLE_DESCRIPTOR<3, GENERAL_EXTENDABLE<3>,
+      MOBILITY_ANALYTIC_NO_ANGLE_FLUIDVEL<3>,
+      FORCING_SUBGRID<3>, PHYSPROPERTIES_SUBGRID_DENSITY<3>,
+      DYNBEHAVIOUR_BASIC,
+      PARALLELIZATION_SUBGRID ,
+      HAIDER_LEVENSPIEL>;
+
+using SubgridParticle3DparallelTranCong =
+      PARTICLE_DESCRIPTOR<3, GENERAL_EXTENDABLE<3>,
+      MOBILITY_ANALYTIC_NO_ANGLE_FLUIDVEL<3>,
+      FORCING_SUBGRID<3>, PHYSPROPERTIES_SUBGRID_DENSITY<3>,
+      DYNBEHAVIOUR_BASIC,
+      PARALLELIZATION_SUBGRID ,
+      TRAN_CONG>;
+
+ using SubgridParticle3DparallelEulerRotation =
+      PARTICLE_DESCRIPTOR<3, GENERAL_EXTENDABLE<3>,
+      MOBILITY_ANALYTIC_NO_ANGLE_FLUIDVEL<3>,
+      FORCING_RESOLVED<3>, PHYSPROPERTIES_SUBGRID_DENSITY<3>,
+      DYNBEHAVIOUR_BASIC,
+      PARALLELIZATION_SUBGRID,
+      EULER_ROTATION>;
+
+
+using SubgridParticle3D2  = PARTICLE_DESCRIPTOR<3, GENERAL_TMP<3>,
+      MOBILITY_VERLET_NO_ANGLE_FLUIDVEL<3>, FORCING_SUBGRID<3>,
+      PHYSPROPERTIES_SUBGRID_DENSITY<3>,
+      DYNBEHAVIOUR_BASIC>;
+
+} //namespace descriptors
+
+} //namespace olb
+
+
+#endif
