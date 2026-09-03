@@ -62,7 +62,7 @@ const T latentHeatVolumetric = L_heat*910;  // J / m^3
 const T thermalCapilaryLength = 4.*interfaceFreeEnergyIceWater*heatCapacityVolumetric/(latentHeatVolumetric*latentHeatVolumetric)*T_m; // [gamma.C_p / L^2] * T_m : [m]
 
 
-T Temp = 272.85;
+T Temp;// = 272.85;
 
 T Delta;// = abs(C_p_W * (Temp - T_m) / L_heat);
 
@@ -215,9 +215,9 @@ void prepareGeometry(UnitConverter<T, DESCRIPTOR> const& converter,SuperGeometry
     Vector<T,3> origin_Top(0., 0., lengthZ );
     IndicatorCuboid3D<T> topbox(extend_Top, origin_Top);
     
-    //superGeometry.rename(1, 2, bottombox);
+    superGeometry.rename(1, 2, bottombox);
 
-    //superGeometry.rename(1, 3, topbox);
+    superGeometry.rename(1, 3, topbox);
 
     superGeometry.clean(); 
 
@@ -247,16 +247,16 @@ void prepareLattices(SuperGeometry<T,3>& superGeometry,
 	phaseField.defineDynamics<DiffusionDynamics>(superGeometry,1);
 	//boundary::set<boundary::LocalVelocity>(phaseField, superGeometry, 2);
 	//boundary::set<boundary::LocalPressure>(phaseField, superGeometry, 3);
-	//phaseField.defineDynamics<BounceBack>(superGeometry, 2);
-	//phaseField.defineDynamics<BounceBack>(superGeometry, 3);
+	phaseField.defineDynamics<BounceBack>(superGeometry, 2);
+	phaseField.defineDynamics<BounceBack>(superGeometry, 3);
 	/*########################*/
 
 	/* HEAT EQUATION */
 	heatEquation.defineDynamics<DiffusionDynamics>(superGeometry,1);
 	//boundary::set<boundary::AdvectionDiffusionDirichlet>(heatEquation, superGeometry, 2);
 	//boundary::set<boundary::AdvectionDiffusionDirichlet>(heatEquation, superGeometry, 3);
-	//boundary::set<boundary::LocalPressure>(heatEquation, superGeometry, 2);
-	//boundary::set<boundary::LocalPressure>(heatEquation, superGeometry, 3);
+	boundary::set<boundary::LocalPressure>(heatEquation, superGeometry, 2);
+	boundary::set<boundary::LocalPressure>(heatEquation, superGeometry, 3);
 
 	//setLocalPressureBoundary(heatEquation, omega, superGeometry, 2);
 	//setLocalPressureBoundary(heatEquation, omega, superGeometry, 3);
@@ -315,27 +315,27 @@ void initializeLattice(SuperGeometry<T,3>& superGeometry,
 	heatEquation.defineRhoU(bulkIndicator,underCooling,uF);
 	heatEquation.iniEquilibrium(bulkIndicator,underCooling,uF);
 
-	//heatEquation.defineRhoU(bottom,temp_LO,uF);
-	//heatEquation.iniEquilibrium(bottom,temp_LO,uF);
+	heatEquation.defineRhoU(bottom,underCooling,uF);
+	heatEquation.iniEquilibrium(bottom,underCooling,uF);
 
-	//heatEquation.defineRhoU(top,temp_HI,uF);
-	//heatEquation.iniEquilibrium(top,temp_HI,uF);
+	heatEquation.defineRhoU(top,underCooling,uF);
+	heatEquation.iniEquilibrium(top,underCooling,uF);
 
 	clout<<"Initialized heat equation"<<std::endl;
 	/*#######################*/
 
-	//phaseField.defineRhoU(bulkIndicator,phiLiquid,uF);
-	//phaseField.iniEquilibrium(bulkIndicator,phiLiquid,uF);
-	phaseField.defineRhoU(bulkIndicator,phiSolid,uF);
-	phaseField.iniEquilibrium(bulkIndicator,phiSolid,uF);
+	phaseField.defineRhoU(bulkIndicator,phiLiquid,uF);
+	phaseField.iniEquilibrium(bulkIndicator,phiLiquid,uF);
+	//phaseField.defineRhoU(bulkIndicator,phiSolid,uF);
+	//phaseField.iniEquilibrium(bulkIndicator,phiSolid,uF);
 
 	//phaseField.defineRhoU(bulkIndicator,tanhs,uF);
 	//phaseField.iniEquilibrium(bulkIndicator,tanhs,uF);
 
-	//phaseField.defineRhoU(top, phiSolid, uF);
-	//phaseField.iniEquilibrium(top, phiSolid, uF);
-	//phaseField.defineRhoU(bottom, phiSolid, uF);
-	//phaseField.iniEquilibrium(bottom, phiSolid, uF);
+	phaseField.defineRhoU(top, phiSolid, uF);
+	phaseField.iniEquilibrium(top, phiSolid, uF);
+	phaseField.defineRhoU(bottom, phiSolid, uF);
+	phaseField.iniEquilibrium(bottom, phiSolid, uF);
 
 	phaseField.initialize();
 	heatEquation.initialize();
@@ -419,9 +419,9 @@ int main( int argc, char* argv[] )
 	olb::initialize( &argc, &argv );
 
 	srand(static_cast<unsigned int>(time(0)));
-	singleton::directories().setOutputDir( "Hysteresis_272_85/");
+	singleton::directories().setOutputDir( argv[1]);
 	OstreamManager clout(std::cout,"main");
-
+	Temp = std::stof(argv[2]);
 	//int rand (void);
 	clout<<"Simulation start.."<<std::endl;
 
@@ -473,6 +473,7 @@ int main( int argc, char* argv[] )
 	
 	T Delta_Real  = abs(C_p_W * (Temp - T_m) / L_heat);
 	T Delta_numerical = ((a1*W/lambda)/thermalCapilaryLength)*Delta_Real;
+	T d_num_d_0_ratio = (a1*W/lambda)/thermalCapilaryLength;
 	T dTemp_numerical = L_heat/C_p_W * Delta_numerical;
 
 	clout << "Temp we SHOULD simulate in \t"<<  T_m - dTemp_numerical <<"K"<< std::endl;
@@ -672,38 +673,38 @@ int main( int argc, char* argv[] )
 	int statInter     = converterHE.getLatticeTime(1*60.*1e-6);
 
 	const std::string avgPorosityFileName = "averagePorosity.txt";
-	std::ofstream avgPorosityOut(avgPorosityFileName, std::ios::out | std::ios::trunc);
+	std::ofstream avgPorosityOut(argv[1]+avgPorosityFileName, std::ios::out | std::ios::trunc);
 
-	T min_temp = 1. ;
+	T min_temp = Delta ;
 	T dT = min_temp; // below 273.15 K 
-	T max_temp = 20.;
+	T max_temp = T_m - 272.5;
 	T DeltaTemp = (max_temp - min_temp)/(converterHE.getLatticeTime(maxPhysT/2.)/updateInter);
 
 	clout << min_temp << "\t"<< max_temp <<"\t" << DeltaTemp << std::endl;
-	//AnalyticalConst3D<T,T> temp(1-Delta);
-	//heatEquation.defineRhoU(topBottomIndicator,temp,uF);
-	//heatEquation.iniEquilibrium(topBottomIndicator,temp,uF);
-	//heatEquation.template setProcessingContext<Array<momenta::FixedDensity::RHO>>(
-	//		ProcessingContext::Simulation);
+	AnalyticalConst3D<T,T> temp(1-Delta);
+	heatEquation.defineRhoU(topBottomIndicator,temp,uF);
+	heatEquation.iniEquilibrium(topBottomIndicator,temp,uF);
+	heatEquation.template setProcessingContext<Array<momenta::FixedDensity::RHO>>(
+			ProcessingContext::Simulation);
 	clout<<Delta <<std::endl;
 	for(int PF_time=0; PF_time*dt < maxPhysT; PF_time++)
 	{
-		//if(PF_time % updateInter== 0 and PF_time > 0)
-		//{
-		//	//if(PF_time*dt > maxPhysT/2.)
-		//	//	dT = dT - DeltaTemp;
-		//	//else
-		//	//	dT = dT + DeltaTemp;
-		//	//clout<<"updating temp"<<std::endl;
-		//	////clout<<PF_time << "\t"<< dT << std::endl;
-		//	//T delta = abs(C_p_I * (dT) / L_heat);
-		//	AnalyticalConst3D<T,T> temp(1-Delta);
-		//	heatEquation.defineRhoU(topBottomIndicator,temp,uF);
-		//	heatEquation.iniEquilibrium(topBottomIndicator,temp,uF);
-		//	heatEquation.template setProcessingContext<Array<momenta::FixedDensity::RHO>>(
-		//			ProcessingContext::Simulation);
+		if(PF_time % updateInter== 0 and PF_time > 0)
+		{
+			if(PF_time*dt > maxPhysT/2.)
+				dT = dT - DeltaTemp;
+			else
+				dT = dT + DeltaTemp;
+			clout<<"updating temp"<<std::endl;
+			//clout<<PF_time << "\t"<< dT << std::endl;
+			T delta = abs(C_p_I * (d_num_d_0_ratio * dT) / L_heat);
+			AnalyticalConst3D<T,T> temp(1-Delta);
+			heatEquation.defineRhoU(topBottomIndicator,temp,uF);
+			heatEquation.iniEquilibrium(topBottomIndicator,temp,uF);
+			heatEquation.template setProcessingContext<Array<momenta::FixedDensity::RHO>>(
+					ProcessingContext::Simulation);
 
-		//}
+		}
 
 		couplingFirst.execute();
 		phaseField.collideAndStream();
