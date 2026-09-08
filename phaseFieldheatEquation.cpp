@@ -334,8 +334,8 @@ void initializeLattice(SuperGeometry<T,3>& superGeometry,
 
 	phaseField.defineRhoU(top, phiSolid, uF);
 	phaseField.iniEquilibrium(top, phiSolid, uF);
-	phaseField.defineRhoU(bottom, phiSolid, uF);
-	phaseField.iniEquilibrium(bottom, phiSolid, uF);
+	//phaseField.defineRhoU(bottom, phiSolid, uF);
+	//phaseField.iniEquilibrium(bottom, phiSolid, uF);
 
 	phaseField.initialize();
 	heatEquation.initialize();
@@ -497,7 +497,7 @@ int main( int argc, char* argv[] )
 #endif
 
 	CuboidDecomposition<T,3> regionGeometry(region,L,noOfCuboids); // Define the whole region
-	regionGeometry.setPeriodicity({true,true,true});  // Periodic boundary condition in x and y directions 
+	regionGeometry.setPeriodicity({true,true,false});  // Periodic boundary condition in x and y directions 
 
 	HeuristicLoadBalancer<T> loadBalancer( regionGeometry );
 	SuperGeometry<T,3> superGeometry(regionGeometry,loadBalancer);
@@ -677,7 +677,7 @@ int main( int argc, char* argv[] )
 
 	T min_temp = Delta ;
 	T dT = min_temp; // below 273.15 K 
-	T max_temp = T_m - 272.5;
+	T max_temp = T_m - 272.1;
 	T DeltaTemp = (max_temp - min_temp)/(converterHE.getLatticeTime(maxPhysT/2.)/updateInter);
 
 	clout << min_temp << "\t"<< max_temp <<"\t" << DeltaTemp << std::endl;
