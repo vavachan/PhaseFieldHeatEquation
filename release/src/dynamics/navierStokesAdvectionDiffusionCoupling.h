@@ -935,8 +935,8 @@ struct PhaseFieldHeatEquationCouplingSecondPart{
 			for(int iPop =0; iPop < DESCRIPTOR_HE::q; iPop++)
 			{
 				cellHE[iPop] = cellHE[iPop] 
-					- omegaEff*(cellHE[iPop]-descriptors::t<V,DESCRIPTOR_HE>(iPop)*(theta-V{1.}));
-					//+ descriptors::t<V,DESCRIPTOR_HE>(iPop)*V{0.5}*(phi-prevphi);
+					- omegaEff*(cellHE[iPop]-descriptors::t<V,DESCRIPTOR_HE>(iPop)*(theta-V{1.}))
+					+ descriptors::t<V,DESCRIPTOR_HE>(iPop)*V{0.5}*(phi-prevphi);
 				//+ descriptors::t<V,TDESCRIPTOR>(iPop)*V{0.5}*effectiveDiffusivity*(rho*cI-rho*cW)/(rho*C_phi)*gradPhi_dot_gradTheta*dt;
 			}
 		}

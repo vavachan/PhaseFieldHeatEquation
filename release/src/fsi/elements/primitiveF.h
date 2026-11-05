@@ -37,7 +37,10 @@ struct CuboidPorosityF {
     fields::fsi::ELEMENT_UPPER,
     fields::fsi::ELEMENT_ROTATION,
     fields::fsi::ELEMENT_U_TRANSLATION,
-    fields::fsi::ELEMENT_U_ROTATION
+    fields::fsi::ELEMENT_U_ROTATION,
+    fields::fsi::PERIODIC_DIRECTIONS,
+    fields::fsi::DOMAIN_LENGTH
+
   >;
 
   /// Parameter fields required for computation
@@ -48,6 +51,9 @@ struct CuboidPorosityF {
     fields::array_of<fields::fsi::ELEMENT_ROTATION>,
     fields::array_of<fields::fsi::ELEMENT_U_TRANSLATION>,
     fields::array_of<fields::fsi::ELEMENT_U_ROTATION>,
+    fields::array_of<fields::fsi::DOMAIN_LENGTH>,
+    fields::array_of<fields::fsi::ELEMENT_ROTATION_MATRIX>,
+
     // General non-FSI specific parameters
     fields::converter::PHYS_VELOCITY,
     fields::converter::PHYS_DELTA_X
@@ -129,6 +135,7 @@ struct CuboidPorosityF {
   }
 };
 
+
 struct SpherePorosityF {
   struct RADIUS : public descriptors::FIELD_BASE<1> { };
 
@@ -137,7 +144,9 @@ struct SpherePorosityF {
     RADIUS,
     fields::fsi::ELEMENT_ROTATION,
     fields::fsi::ELEMENT_U_ROTATION,
-    fields::fsi::ELEMENT_U_TRANSLATION
+    fields::fsi::ELEMENT_U_TRANSLATION,
+    fields::fsi::PERIODIC_DIRECTIONS,
+    fields::fsi::DOMAIN_LENGTH
   >;
 
   /// Parameter fields required for computation
@@ -147,6 +156,9 @@ struct SpherePorosityF {
     fields::array_of<fields::fsi::ELEMENT_ROTATION>,
     fields::array_of<fields::fsi::ELEMENT_U_ROTATION>,
     fields::array_of<fields::fsi::ELEMENT_U_TRANSLATION>,
+    fields::array_of<fields::fsi::PERIODIC_DIRECTIONS>,
+    fields::array_of<fields::fsi::DOMAIN_LENGTH>,
+
     // General non-FSI specific parameters
     fields::converter::PHYS_VELOCITY,
     fields::converter::PHYS_DELTA_X
@@ -175,14 +187,28 @@ struct SpherePorosityF {
 
     const auto pivots = params.template get<fields::array_of<fields::fsi::ELEMENT_PIVOT>>();
     const auto radii  = params.template get<fields::array_of<RADIUS>>();
+    const auto periodicDirsArr = params.template get<fields::array_of<fields::fsi::PERIODIC_DIRECTIONS>>();
+    const auto domainLengthsArr = params.template get<fields::array_of<fields::fsi::DOMAIN_LENGTH>>();
+    
+    const Vector<V, DESCRIPTOR::d> periodicDirs{periodicDirsArr,iElement};
+    const Vector<V, DESCRIPTOR::d> domainLengths{domainLengthsArr,iElement};
+
 
     const Vector<V,DESCRIPTOR::d> elementPivot{pivots, iElement};
     const V elementRadius = radii[iElement];
 
     const auto physDeltaX = params.template get<fields::converter::PHYS_DELTA_X>();
 
-    const V d = sdf::sphere(physR - elementPivot, elementRadius);
-    const V eps = V{0.5}*physDeltaX;
+    const V eps = 0.5*physDeltaX;
+    Vector<V,DESCRIPTOR::d> shiftedPhysR = physR - elementPivot;
+    for(int d=0; d<DESCRIPTOR::d; d++)
+    {
+	    if(periodicDirs[d])
+		    shiftedPhysR[d] -= domainLengths[d]*std::round(shiftedPhysR[d]/domainLengths[d]);
+    }
+
+
+    const V d = sdf::sphere(shiftedPhysR, elementRadius-V{0.5}*eps);
     if (d < eps) {
       return util::max(d / eps, 0);
     } else {
@@ -200,9 +226,19 @@ struct SpherePorosityF {
     const auto pivots = params.template get<fields::array_of<fields::fsi::ELEMENT_PIVOT>>();
     const auto translationUs = params.template get<fields::array_of<fields::fsi::ELEMENT_U_TRANSLATION>>();
     const auto rotationUs = params.template get<fields::array_of<fields::fsi::ELEMENT_U_ROTATION>>();
+    const auto periodicDirsArr = params.template get<fields::array_of<fields::fsi::PERIODIC_DIRECTIONS>>();
+    const auto domainLengthsArr = params.template get<fields::array_of<fields::fsi::DOMAIN_LENGTH>>();
+    
+    const Vector<V, DESCRIPTOR::d> periodicDirs{periodicDirsArr,iElement};
+    const Vector<V, DESCRIPTOR::d> domainLengths{domainLengthsArr,iElement};
 
     const Vector<V,DESCRIPTOR::d> elementPivotR{pivots, iElement};
-    const Vector<V,DESCRIPTOR::d> shiftedPhysR = physR - elementPivotR;
+    Vector<V,DESCRIPTOR::d> shiftedPhysR = physR - elementPivotR;
+    for(int d=0; d<DESCRIPTOR::d; d++)
+    {
+	    if(periodicDirs[d])
+		    shiftedPhysR[d] -= domainLengths[d]*std::round(shiftedPhysR[d]/domainLengths[d]);
+    }
 
     Vector<V,DESCRIPTOR::d> u{translationUs, iElement};
     if constexpr (DESCRIPTOR::d == 2) {

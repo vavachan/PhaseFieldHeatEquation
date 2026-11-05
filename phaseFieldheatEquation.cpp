@@ -54,7 +54,9 @@ const T  T_m    = 273.15;   // K
 
 const T  k_cond_S = 2.2; 
 
-const T  kappa  = k_cond_I / (rho * C_p_W); // Kg⋅m⋅s^−3⋅K^−1 / ( Kg.m^-3.m^2 K^-1 s^-2) = m^2/s
+const T  kappaI  = k_cond_I / (rho * C_p_W); // Kg⋅m⋅s^−3⋅K^−1 / ( Kg.m^-3.m^2 K^-1 s^-2) = m^2/s
+const T  kappaW  = k_cond_W / (rho * C_p_W); // Kg⋅m⋅s^−3⋅K^−1 / ( Kg.m^-3.m^2 K^-1 s^-2) = m^2/s
+const T  kappaS  = k_cond_S / (rho * C_p_W); // Kg⋅m⋅s^−3⋅K^−1 / ( Kg.m^-3.m^2 K^-1 s^-2) = m^2/s
 
 const T interfaceFreeEnergyIceWater = 3*1e-2 ; // J / m^2
 const T heatCapacityVolumetric = C_p_W*910; // J / [m^3 . K]
@@ -62,30 +64,17 @@ const T latentHeatVolumetric = L_heat*910;  // J / m^3
 const T thermalCapilaryLength = 4.*interfaceFreeEnergyIceWater*heatCapacityVolumetric/(latentHeatVolumetric*latentHeatVolumetric)*T_m; // [gamma.C_p / L^2] * T_m : [m]
 
 
-T Temp;// = 272.85;
+T Temp = 273.14;
 
 T Delta;// = abs(C_p_W * (Temp - T_m) / L_heat);
 
 const T a1 = 0.88388347648;
 const T a2 = 0.6267;
 
-const T lengthX = 0.15*1e-3;
-const T lengthY = 0.15*1e-3;
-const T lengthZ = 0.15*1e-3;
+const T lengthX = 3*1e-4;//0.15*1e-3/4.;
+const T lengthY = 3*1e-4;//0.15*1e-3/4.;
+const T lengthZ = 5*1e-4;//0.15*1e-3/4.;
 
-int N = 450;
-
-const T dx= lengthX/N;
-//const T dt= 1.;
-
-const T W = 3*dx;
-const T W_sq = W * W;         // W^2 (for Eq 1)
-const T lambda =  6;
-const T tau = lambda*(a2*W_sq)/kappa; 
-
-const T eta_theta= 1.;//descriptors::invCs2<T,TDESCRIPTOR>()*kappa*(dt/(dx*dx))+1./2.;
-const T dt = (eta_theta-1./2.)*(dx*dx)/(descriptors::invCs2<T,TDESCRIPTOR>()*kappa);
-const T eta_phi = descriptors::invCs2<T,DESCRIPTOR>()*W_sq/tau*(dt/(dx*dx))+1./2.;
 
 
 
@@ -290,7 +279,9 @@ void initializeLattice(SuperGeometry<T,3>& superGeometry,
 		//SuperLattice<T,DESCRIPTOR>& fluid,
 		//SuperLattice<T,TDESCRIPTOR>& SS,
 		T *x, T *y, T *z,
-		int nNucli)
+		int nNucli, 
+		T nucleationWidth,
+		T W )
 		//UnitConverter<T,DESCRIPTOR> const& converterFLUID)
 {
 	OstreamManager clout(std::cout,"initialize Lattice");
@@ -300,7 +291,8 @@ void initializeLattice(SuperGeometry<T,3>& superGeometry,
 	auto top = superGeometry.getMaterialIndicator({3});
 	auto bottom = superGeometry.getMaterialIndicator({2});
 
-	TanhSphere <T,T,DESCRIPTOR> tanhs(x,y,z,30*dx,2*W*W,nNucli);
+	clout << nucleationWidth << "\t"<< W <<std::endl;
+	TanhSphere <T,T,DESCRIPTOR> tanhs(x,y,z,nucleationWidth,2*W*W,nNucli);
 
 	std::vector<T> velocity(3,T(0.));   // Velocity is zero
 	AnalyticalConst3D<T,T> uF(velocity);
@@ -351,8 +343,8 @@ int readConfigToXYZ(T *&X, T *&Y, T *&Z, T *&RAD, std::string filename)
 	clout<<"starting ..."<<std::endl;
 	std::ifstream config(filename);
 	std::string STR;
-	int nAtoms = 15000;
-	T scale=1e-3;
+	int nAtoms = 3000;
+	T scale=1.;
 //	for(int i=0; i <9;i++)
 //	{
 //		std::getline(config,STR);
@@ -372,8 +364,9 @@ int readConfigToXYZ(T *&X, T *&Y, T *&Z, T *&RAD, std::string filename)
 		X[i] = X[i]*scale;
 		Y[i] = Y[i]*scale;
 		Z[i] = Z[i]*scale;
-		RAD[i] = RAD[i]*scale;
-		//clout<<i<<"\t"<<X[i]<<"\t"<<Y[i]<<"\t"<<Z[i]<<RAD[i]<<std::endl;
+		RAD[i] = 0.9*RAD[i]*scale;
+		//clout<<i<<"\t"<<X[i]<<"\t"<<Y[i]<<"\t"<<Z[i]<<"\t"<<RAD[i]<<std::endl;
+		//break;
 	}
 	config.close();
 	clout<<"done..."<<std::endl;
@@ -422,6 +415,19 @@ int main( int argc, char* argv[] )
 	singleton::directories().setOutputDir( argv[1]);
 	OstreamManager clout(std::cout,"main");
 	Temp = std::stof(argv[2]);
+	int N = std::stoi(argv[3]);
+
+	const T dx= lengthZ/N;
+	//const T dt= 1.;
+
+	const T W = dx;
+	const T W_sq = W * W;         // W^2 (for Eq 1)
+	const T lambda =  6;
+	const T tau = lambda*(a2*W_sq)/(kappaI+kappaW)/2.; 
+
+	const T eta_theta= 1.;//descriptors::invCs2<T,TDESCRIPTOR>()*kappa*(dt/(dx*dx))+1./2.;
+	const T dt = (eta_theta-1./2.)*(dx*dx)/(descriptors::invCs2<T,TDESCRIPTOR>()*(kappaI+kappaW)/2.);
+	const T eta_phi = descriptors::invCs2<T,DESCRIPTOR>()*W_sq/tau*(dt/(dx*dx))+1./2.;
 	//int rand (void);
 	clout<<"Simulation start.."<<std::endl;
 
@@ -432,7 +438,7 @@ int main( int argc, char* argv[] )
 			(T)   eta_theta,                     // latticeRelaxationTime: relaxation time, have to be greater than 0.5!
 			(T)   dx*1,       // charPhysLength: reference length of simulation geometry
 			(T)   0.02*(dx/dt),                      // charPhysVelocity: maximal/highest expected velocity during simulation in __m / s__
-			(T)   kappa, // physViscosity: physical kinematic viscosity in __m^2 / s__
+			(T)   (kappaI+kappaW)/2., // physViscosity: physical kinematic viscosity in __m^2 / s__
 			(T)   1.0                       // physDensity: physical density in __kg / m^3__
 			);
 	UnitConverterFromResolutionAndRelaxationTime<T, DESCRIPTOR> const converterPF(
@@ -472,15 +478,18 @@ int main( int argc, char* argv[] )
 	clout << "Temp we WANT to simulate in \t"<< Temp <<"K"<<std::endl;
 	
 	T Delta_Real  = abs(C_p_W * (Temp - T_m) / L_heat);
-	T Delta_numerical = ((a1*W/lambda)/thermalCapilaryLength)*Delta_Real;
 	T d_num_d_0_ratio = (a1*W/lambda)/thermalCapilaryLength;
+	T Delta_numerical = d_num_d_0_ratio*Delta_Real;
 	T dTemp_numerical = L_heat/C_p_W * Delta_numerical;
+
 
 	clout << "Temp we SHOULD simulate in \t"<<  T_m - dTemp_numerical <<"K"<< std::endl;
 
 	Delta = Delta_numerical;
+	T nucleationWidth  = 1.768*W/(lambda*Delta); 
+	clout<< Delta << std::endl;
 	clout << "critical nucleation radius (numerical) \t"<<1.768*W/(lambda*Delta)/dx<<" l.u; \t"<<1.768*W/(lambda*Delta)<<" m" <<std::endl;
-
+	clout << kappaI << "\t" << kappaW << "\t"<< kappaS << std::endl;
 
 	T L=converterHE.getPhysDeltaX();
 	bool restart = false;
@@ -528,7 +537,8 @@ int main( int argc, char* argv[] )
 	T *Y=nullptr;
 	T *Z=nullptr;
 	T *RAD=nullptr;
-	int nAtoms = readConfigToXYZ(X,Y,Z,RAD,"N15000LogNormalDistributionJUSTPOSITIONS.dat");
+	//int nAtoms = readConfigToXYZ(X,Y,Z,RAD,"N15000LogNormalDistributionJUSTPOSITIONS.dat");
+	int nAtoms = readConfigToXYZ(X,Y,Z,RAD,"3000positions.dat");
 
 
 	int nNucli = 1;
@@ -536,16 +546,22 @@ int main( int argc, char* argv[] )
 	T *y = new T[nNucli];
 	T *z = new T[nNucli];
 	//findNNucliLocations(X,Y,Z,RAD,nAtoms,x,y,z,nNucli);
-	x[0] = lengthX/2.;
-	y[0] = lengthY/2.;
-	z[0] = lengthZ/2.;
-	initializeLattice(
-			superGeometry,
-			phaseField,
-			heatEquation,
-			x,y,z,
-			nNucli);
+	//x[0] = lengthX/2.;
+	//y[0] = lengthY/2.;
+	//z[0] = lengthZ/2.;
+    	initializeLattice(
+    			superGeometry,
+    			phaseField,
+    			heatEquation,
+    			x,y,z,
+    			nNucli,
+    			nucleationWidth,
+    			W
+    			);
+  
 
+	AnalyticalConst3D<T,T> liquidPorosity(1.);
+	phaseField.defineField<POROSITY> (superGeometry,1,liquidPorosity);
 
 	reportGpuMem("after initialization");
 
@@ -565,7 +581,9 @@ int main( int argc, char* argv[] )
   		auto sphereParams = makeParametersD<T,descriptors::SPATIAL_DESCRIPTOR<3>>(
   				fields::fsi::ELEMENT_TAG{},   1+iSphere,
   				fields::fsi::ELEMENT_PIVOT{}, spherePhysR,
-  				SpherePorosityF::RADIUS{},    RAD[iSphere]
+  				SpherePorosityF::RADIUS{},    RAD[iSphere], 
+				fields::fsi::PERIODIC_DIRECTIONS{}, Vector<T,DESCRIPTOR::d>{1., 1., 1.},
+				fields::fsi::DOMAIN_LENGTH{},Vector<T,DESCRIPTOR::d>{lengthX, lengthY, lengthZ}
   				);
   		fsiEmbeddingO.add(sphereParams);
   	}
@@ -574,9 +592,11 @@ int main( int argc, char* argv[] )
 
 	phaseField.setParameter<fields::converter::PHYS_DELTA_X>(converterPF.getPhysDeltaX());
 
+
+	phaseField.load("phaseFieldEquation");
+	heatEquation.load("heatEquation");
 	phaseField.setProcessingContext(ProcessingContext::Simulation); // ← and this
 	heatEquation.setProcessingContext(ProcessingContext::Simulation); // ← and this
-
 
 
 
@@ -585,6 +605,7 @@ int main( int argc, char* argv[] )
 	fsiEmbeddingO.initialize();
 	fsiEmbeddingO.apply();
 	phaseField.communicate();
+
 
 	reportGpuMem("after embedding");
 	{
@@ -627,7 +648,6 @@ int main( int argc, char* argv[] )
 	//vtmWriterHE.addFunctor(populationHE);
 
 
-	vtmWriterPF.write(-2);
 	SuperLatticeCoupling couplingFirst(PhaseFieldHeatEquationCouplingFirstPart<T>{},
 			names::A{},phaseField,
 			names::B{},heatEquation
@@ -658,26 +678,32 @@ int main( int argc, char* argv[] )
 	couplingSecond.setParameter<PhaseFieldHeatEquationCouplingSecondPart<T>::deltat>(dt);
 
 
+
 	//auto bulkIndicatorPF = superGeometry.getMaterialIndicator({2,3});
-	auto topBottomIndicator= superGeometry.getMaterialIndicator({2,3});
+	auto topBottomIndicator= superGeometry.getMaterialIndicator(3);
 	std::vector<T> velocity(3,T(0.));   // Velocity is zero
 	AnalyticalConst3D<T,T> uF(velocity);
 
 
-	T maxPhysT = 1000*60*1e-6;
+	T maxPhysT = 20;
 	util::Timer<T> timer(converterPF.getLatticeTime(maxPhysT),
 			superGeometry.getStatistics().getNvoxel());
 	timer.start();
-	int vtkWriteInter = converterHE.getLatticeTime(5*60*1e-6);
-	int updateInter   = converterHE.getLatticeTime(5*60.*1e-6);
-	int statInter     = converterHE.getLatticeTime(1*60.*1e-6);
+	int vtkWriteInter = converterHE.getLatticeTime(0.1);
+	int updateInter   = converterHE.getLatticeTime(0.1);
+	int statInter     = converterHE.getLatticeTime(0.01);
+
+	clout << "write config \t" << vtkWriteInter << std::endl;
+	clout << "update temp\t" << updateInter<< std::endl;
+	clout << "print stat \t" << statInter<< std::endl;
 
 	const std::string avgPorosityFileName = "averagePorosity.txt";
 	std::ofstream avgPorosityOut(argv[1]+avgPorosityFileName, std::ios::out | std::ios::trunc);
 
-	T min_temp = Delta ;
-	T dT = min_temp; // below 273.15 K 
-	T max_temp = T_m - 272.1;
+	T min_temp = T_m - 273.14;
+	T dT = T_m - Temp;
+	T max_temp = T_m - 273.069;
+	T mid_temp = (max_temp - min_temp) /2.;
 	T DeltaTemp = (max_temp - min_temp)/(converterHE.getLatticeTime(maxPhysT/2.)/updateInter);
 
 	clout << min_temp << "\t"<< max_temp <<"\t" << DeltaTemp << std::endl;
@@ -687,24 +713,18 @@ int main( int argc, char* argv[] )
 	heatEquation.template setProcessingContext<Array<momenta::FixedDensity::RHO>>(
 			ProcessingContext::Simulation);
 	clout<<Delta <<std::endl;
+
+	T averagePorosityPrevTimestep ; 
+	bool increaseTemp = false;
+	vtmWriterPF.write(-2);
+	//return 0;
+	//d_num_d_0_ratio = 1.;
 	for(int PF_time=0; PF_time*dt < maxPhysT; PF_time++)
 	{
-		if(PF_time % updateInter== 0 and PF_time > 0)
-		{
-			if(PF_time*dt > maxPhysT/2.)
-				dT = dT - DeltaTemp;
-			else
-				dT = dT + DeltaTemp;
-			clout<<"updating temp"<<std::endl;
-			//clout<<PF_time << "\t"<< dT << std::endl;
-			T delta = abs(C_p_I * (d_num_d_0_ratio * dT) / L_heat);
-			AnalyticalConst3D<T,T> temp(1-Delta);
-			heatEquation.defineRhoU(topBottomIndicator,temp,uF);
-			heatEquation.iniEquilibrium(topBottomIndicator,temp,uF);
-			heatEquation.template setProcessingContext<Array<momenta::FixedDensity::RHO>>(
-					ProcessingContext::Simulation);
+		//if(PF_time % updateInter== 0 and PF_time > 0)
+		//{
 
-		}
+		//}
 
 		couplingFirst.execute();
 		phaseField.collideAndStream();
@@ -730,12 +750,37 @@ int main( int argc, char* argv[] )
 			phaseField.setProcessingContext(ProcessingContext::Evaluation);
         		//vtmWriterPF.write(PF_time);
 			auto averagePorosity = computeAveragePorosity(phaseField);
+			if(abs((averagePorosity[0] - averagePorosityPrevTimestep)/averagePorosity[0]) < 1.e-3)
+			{
+
+				if(not increaseTemp)
+					dT = dT - DeltaTemp;
+				else
+					dT = dT + DeltaTemp;
+
+				if(dT < 0 )
+					break;
+
+				//clout<<PF_time << "\t"<< dT << std::endl;
+				T delta = abs(C_p_I * ( d_num_d_0_ratio * dT) / L_heat);
+				if(1.768*W/(lambda*delta)/dx < 3 and increaseTemp)
+					increaseTemp = false;
+				clout<<T_m - dT << "\t" << T_m - d_num_d_0_ratio * dT <<"\t"<<delta <<"\t" << 1.768*W/(lambda*delta)/dx <<" [l.u] "<< std::endl ;
+				AnalyticalConst3D<T,T> temp(1-delta);
+				heatEquation.defineRhoU(topBottomIndicator,temp,uF);
+				heatEquation.iniEquilibrium(topBottomIndicator,temp,uF);
+				heatEquation.template setProcessingContext<Array<momenta::FixedDensity::RHO>>(
+						ProcessingContext::Simulation);
+
+			}
 			phaseField.setProcessingContext(ProcessingContext::Simulation); // ← and this
 			if(singleton::mpi().getRank() == 0)
 			{
-				std::cout<< PF_time*dt <<"\t"<<averagePorosity<<"\t"<<dT<<"\n";
+				std::cout<< PF_time*dt <<"\t"<<averagePorosity<<"\t"<<dT<<"\t"<<averagePorosityPrevTimestep<<"\n";
 				avgPorosityOut << PF_time*dt <<"\t"<<averagePorosity[0]<<"\t"<<averagePorosity[1]<<"\t"<<dT<<std::endl;
 			}
+
+			averagePorosityPrevTimestep = averagePorosity[0];
 		}
 
 		if(PF_time%vtkWriteInter==0)

@@ -38,6 +38,10 @@ struct ELEMENT_TAG : public descriptors::TYPED_FIELD_BASE<int,1> { };
 struct ELEMENT_PIVOT  : public descriptors::FIELD_BASE<0,1> { };
 struct REDUCED_ELEMENT_TAG : public ELEMENT_TAG { };
 
+struct PERIODIC_DIRECTIONS : public descriptors::FIELD_BASE<0,1>{};
+struct DOMAIN_LENGTH : public descriptors::FIELD_BASE<0,1>{};
+
+
 struct ELEMENT_F_CURR : public descriptors::FIELD_BASE<0,1> { };
 struct ELEMENT_F_PREV : public descriptors::FIELD_BASE<0,1> { };
 
